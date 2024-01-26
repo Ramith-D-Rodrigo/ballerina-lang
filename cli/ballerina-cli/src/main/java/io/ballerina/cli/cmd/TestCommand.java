@@ -208,6 +208,9 @@ public class TestCommand implements BLauncherCmd {
     @CommandLine.Option(names = "--emit", description =  "Emit the test executable fat jars")
     private Boolean emitTestExecutable;
 
+    @CommandLine.Option(names = "--cloud", description = "Enable cloud artifact generation")
+    private String cloud;
+
 
     private static final String testCmd = "bal test [--OPTIONS]\n" +
             "                   [<ballerina-file> | <package-path>] [(-Ckey=value)...]";
@@ -400,6 +403,7 @@ public class TestCommand implements BLauncherCmd {
                 .setObservabilityIncluded(observabilityIncluded)
                 .setDumpBuildTime(dumpBuildTime)
                 .setSticky(sticky)
+                .setCloud(cloud)
                 .setDumpGraph(dumpGraph)
                 .setDumpRawGraphs(dumpRawGraphs)
                 .setNativeImage(nativeImage)
