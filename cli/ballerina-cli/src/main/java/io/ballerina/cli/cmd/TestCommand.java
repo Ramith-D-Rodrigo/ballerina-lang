@@ -372,7 +372,7 @@ public class TestCommand implements BLauncherCmd {
                         !project.buildOptions().cloud().isEmpty()))
                 .addTask(new RunNativeImageTestTask(outStream, rerunTests, groupList, disableGroupList,
                                 testList, includes, coverageFormat, moduleMap, listGroups),
-                        !project.buildOptions().nativeImage())
+                        (!project.buildOptions().nativeImage() || !project.buildOptions().cloud().isEmpty()))
                 .addTask(new DumpBuildTimeTask(outStream), !project.buildOptions().dumpBuildTime())
                 .build();
 
