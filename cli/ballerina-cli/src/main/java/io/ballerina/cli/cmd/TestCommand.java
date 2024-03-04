@@ -24,6 +24,7 @@ import io.ballerina.cli.task.CompileTask;
 import io.ballerina.cli.task.CreateTestExecutableTask;
 import io.ballerina.cli.task.DumpBuildTimeTask;
 import io.ballerina.cli.task.ResolveMavenDependenciesTask;
+import io.ballerina.cli.task.RunBallerinaPreBuildToolsTask;
 import io.ballerina.cli.task.RunNativeImageTestTask;
 import io.ballerina.cli.task.RunTestsTask;
 import io.ballerina.cli.utils.BuildTime;
@@ -379,12 +380,12 @@ public class TestCommand implements BLauncherCmd {
                 .addTask(new CreateTestExecutableTask(outStream, this.output, includes, excludes, groupList,
                                 disableGroupList, coverageFormat, testList, moduleMap, listGroups, cliArgs),
                         project.buildOptions().cloud().isEmpty())
-                .addTask(new RunTestsTask(outStream, errStream, rerunTests, groupList, disableGroupList,
-                        testList, includes, coverageFormat, moduleMap, listGroups, excludes, cliArgs),
+                .addTask(new RunTestsTask(outStream, errStream, rerunTests, groupList, disableGroupList, testList,
+                                includes, coverageFormat, moduleMap, listGroups, excludes, cliArgs, isParallelExecution),
                         (project.buildOptions().nativeImage() ||
                         !project.buildOptions().cloud().isEmpty()))
                 .addTask(new RunNativeImageTestTask(outStream, rerunTests, groupList, disableGroupList,
-                                testList, includes, coverageFormat, moduleMap, listGroups),
+                                testList, includes, coverageFormat, moduleMap, listGroups, isParallelExecution),
                         (!project.buildOptions().nativeImage() || !project.buildOptions().cloud().isEmpty()))
                 .addTask(new DumpBuildTimeTask(outStream), !project.buildOptions().dumpBuildTime())
                 .build();

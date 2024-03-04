@@ -123,6 +123,7 @@ public class RunNativeImageTestTask implements Task {
             singleExecTests = testList;
         }
         this.listGroups = listGroups;
+        this.isParallelExecution = isParallelExecution;
     }
 
     @Override

@@ -366,7 +366,8 @@ public class TestUtils {
                                           String testSuiteJsonPath, boolean report,
                                           boolean coverage, String groupList, String disableGroupList,
                                           String singleExecTests, boolean isRerunTestExecution,
-                                          boolean listGroups, List<String> cliArgs, boolean isFatJarExecution) {
+                                          boolean listGroups, List<String> cliArgs, boolean isFatJarExecution,
+                                          boolean isParallelExecution) {
 
         cmdArgs.add(Boolean.toString(isFatJarExecution));
         cmdArgs.add(testSuiteJsonPath);
@@ -379,6 +380,7 @@ public class TestUtils {
         cmdArgs.add(singleExecTests != null ? singleExecTests : "");
         cmdArgs.add(Boolean.toString(isRerunTestExecution));
         cmdArgs.add(Boolean.toString(listGroups));
+        cmdArgs.add(Boolean.toString(isParallelExecution));
         cmdArgs.addAll(cliArgs);
     }
 

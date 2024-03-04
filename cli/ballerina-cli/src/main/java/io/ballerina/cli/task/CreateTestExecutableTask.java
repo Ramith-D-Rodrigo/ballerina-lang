@@ -360,7 +360,7 @@ public class CreateTestExecutableTask implements Task {
                 this.coverage, this.groupList,
                 this.disableGroupList, this.singleExecTests,
                 this.isRerunTestExecution, this.listGroups,
-                this.cliArgs, false
+                this.cliArgs, false, false
         );
 
         // Write the cmdArgs to a file in path
