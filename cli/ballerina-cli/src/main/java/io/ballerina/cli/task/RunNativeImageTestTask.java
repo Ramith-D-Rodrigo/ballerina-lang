@@ -112,6 +112,7 @@ public class RunNativeImageTestTask implements Task {
                                   Map<String, Module> modules, boolean listGroups, boolean isParallelExecution) {
         this.out = out;
         this.isRerunTestExecution = rerunTests;
+        this.isParallelExecution = isParallelExecution;
 
         if (disableGroupList != null) {
             this.disableGroupList = disableGroupList;

@@ -298,7 +298,7 @@ public class RunTestsTask implements Task {
         appendRequiredArgs(cmdArgs, target.path().toString(), jacocoAgentJarPath,
                 testSuiteJsonPath.toString(), this.report, this.coverage,
                 this.groupList, this.disableGroupList, this.singleExecTests, this.isRerunTestExecution,
-                this.listGroups, this.cliArgs, false);
+                this.listGroups, this.cliArgs, false, isParallelExecution);
 
         ProcessBuilder processBuilder = new ProcessBuilder(cmdArgs).inheritIO();
         Process proc = processBuilder.start();
