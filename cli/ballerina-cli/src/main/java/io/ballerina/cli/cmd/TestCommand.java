@@ -24,6 +24,7 @@ import io.ballerina.cli.task.CompileTask;
 import io.ballerina.cli.task.CreateTestExecutableTask;
 import io.ballerina.cli.task.DumpBuildTimeTask;
 import io.ballerina.cli.task.ResolveMavenDependenciesTask;
+import io.ballerina.cli.task.RunBallerinaPreBuildToolsTask;
 import io.ballerina.cli.task.RunNativeImageTestTask;
 import io.ballerina.cli.task.RunTestsTask;
 import io.ballerina.cli.utils.BuildTime;
@@ -132,6 +133,9 @@ public class TestCommand implements BLauncherCmd {
 
     @CommandLine.Option(names = "--debug", description = "start in remote debugging mode")
     private String debugPort;
+
+    @CommandLine.Option(names = "--parallel", description = "enable parallel execution", defaultValue = "false")
+    private boolean isParallelExecution;
 
     @CommandLine.Option(names = "--list-groups", description = "list the groups available in the tests")
     private boolean listGroups;
@@ -367,6 +371,7 @@ public class TestCommand implements BLauncherCmd {
 
         TaskExecutor taskExecutor = new TaskExecutor.TaskBuilder()
                 .addTask(new CleanTargetCacheDirTask(), isSingleFile) // clean the target cache dir(projects only)
+                .addTask(new RunBallerinaPreBuildToolsTask(outStream)) // run build tools
                 .addTask(new ResolveMavenDependenciesTask(outStream)) // resolve maven dependencies in Ballerina.toml
                 // compile the modules
                 .addTask(new CompileTask(outStream, errStream, false, isPackageModified,
@@ -376,11 +381,11 @@ public class TestCommand implements BLauncherCmd {
                                 disableGroupList, coverageFormat, testList, moduleMap, listGroups, cliArgs),
                         project.buildOptions().cloud().isEmpty())
                 .addTask(new RunTestsTask(outStream, errStream, rerunTests, groupList, disableGroupList,
-                        testList, includes, coverageFormat, moduleMap, listGroups, excludes, cliArgs),
+                        testList, includes, coverageFormat, moduleMap, listGroups, excludes, cliArgs, isParallelExecution),
                         (project.buildOptions().nativeImage() ||
                         !project.buildOptions().cloud().isEmpty()))
                 .addTask(new RunNativeImageTestTask(outStream, rerunTests, groupList, disableGroupList,
-                                testList, includes, coverageFormat, moduleMap, listGroups),
+                                testList, includes, coverageFormat, moduleMap, listGroups, isParallelExecution),
                         (!project.buildOptions().nativeImage() || !project.buildOptions().cloud().isEmpty()))
                 .addTask(new DumpBuildTimeTask(outStream), !project.buildOptions().dumpBuildTime())
                 .build();

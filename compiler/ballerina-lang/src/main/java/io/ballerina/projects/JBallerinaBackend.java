@@ -39,8 +39,6 @@ import org.ballerinalang.maven.exceptions.MavenResolverException;
 import org.wso2.ballerinalang.compiler.CompiledJarFile;
 import org.wso2.ballerinalang.compiler.bir.codegen.CodeGenerator;
 import org.wso2.ballerinalang.compiler.bir.codegen.interop.InteropValidator;
-import org.wso2.ballerinalang.compiler.semantics.analyzer.ObservabilitySymbolCollectorRunner;
-import org.wso2.ballerinalang.compiler.spi.ObservabilitySymbolCollector;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
 import org.wso2.ballerinalang.util.Lists;
@@ -133,12 +131,6 @@ public class JBallerinaBackend extends CompilerBackend {
         this.compilerContext = projectEnvContext.getService(CompilerContext.class);
         this.interopValidator = InteropValidator.getInstance(compilerContext);
         this.jvmCodeGenerator = CodeGenerator.getInstance(compilerContext);
-        // TODO: Move to a compiler extension once Compiler revamp is complete
-        if (packageContext.compilationOptions().observabilityIncluded()) {
-            ObservabilitySymbolCollector observabilitySymbolCollector
-                    = ObservabilitySymbolCollectorRunner.getInstance(compilerContext);
-            observabilitySymbolCollector.process(packageContext.project());
-        }
         this.conflictedJars = new ArrayList<>();
         performCodeGen();
     }
@@ -205,7 +197,6 @@ public class JBallerinaBackend extends CompilerBackend {
         return diagnosticResult;
     }
 
-    // TODO EmitResult should not contain compilation diagnostics.
     public EmitResult emit(OutputType outputType, Path filePath) {
         Path generatedArtifact = null;
 
@@ -250,23 +241,24 @@ public class JBallerinaBackend extends CompilerBackend {
     }
 
     public EmitResult getEmitResult(Path filePath, Path generatedArtifact, ArtifactType artifactType) {
-        ArrayList<Diagnostic> diagnostics = new ArrayList<>(diagnosticResult.allDiagnostics);
+        ArrayList<Diagnostic> emitResultDiagnostics = new ArrayList<>();
 
         if (filePath != null) {
             List<Diagnostic> pluginDiagnostics = notifyCompilationCompletion(filePath, artifactType);
             if (!pluginDiagnostics.isEmpty()) {
-                diagnostics.addAll(pluginDiagnostics);
+                emitResultDiagnostics.addAll(pluginDiagnostics);
             }
         }
-
-        diagnosticResult = new DefaultDiagnosticResult(diagnostics);
-
-        List<Diagnostic> allDiagnostics = new ArrayList<>(diagnostics);
+        List<Diagnostic> allDiagnostics = new ArrayList<>(diagnosticResult.allDiagnostics);
         jarResolver().diagnosticResult().diagnostics().stream().forEach(
-                diagnostic -> allDiagnostics.add(diagnostic));
+                diagnostic -> emitResultDiagnostics.add(diagnostic));
+        allDiagnostics.addAll(emitResultDiagnostics);
+        // JBallerinaBackend diagnostics contains all diagnostics.
+        // EmitResult will only contain diagnostics related to emitting the executable.
+        diagnosticResult = new DefaultDiagnosticResult(allDiagnostics);
 
         // TODO handle the EmitResult properly
-        return new EmitResult(true, new DefaultDiagnosticResult(allDiagnostics), generatedArtifact);
+        return new EmitResult(true, new DefaultDiagnosticResult(emitResultDiagnostics), generatedArtifact);
     }
 
     public List<Diagnostic> notifyCompilationCompletion(Path filePath, ArtifactType artifactType) {

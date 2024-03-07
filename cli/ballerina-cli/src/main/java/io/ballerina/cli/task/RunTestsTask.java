@@ -105,6 +105,9 @@ public class RunTestsTask implements Task {
     private Map<String, Module> coverageModules;
     private boolean listGroups;
     private final List<String> cliArgs;
+
+    private final boolean isParallelExecution;
+
     TestReport testReport;
     private static final Boolean isWindows = System.getProperty("os.name").toLowerCase(Locale.getDefault())
             .contains("win");
@@ -119,11 +122,13 @@ public class RunTestsTask implements Task {
 
     public RunTestsTask(PrintStream out, PrintStream err, boolean rerunTests, String groupList,
                         String disableGroupList, String testList, String includes, String coverageFormat,
-                        Map<String, Module> modules, boolean listGroups, String excludes, String[] cliArgs)  {
+                        Map<String, Module> modules, boolean listGroups, String excludes, String[] cliArgs,
+                        boolean isParallelExecution)  {
         this.out = out;
         this.err = err;
         this.isRerunTestExecution = rerunTests;
         this.cliArgs = List.of(cliArgs);
+        this.isParallelExecution = isParallelExecution;
 
         if (disableGroupList != null) {
             this.disableGroupList = disableGroupList;
